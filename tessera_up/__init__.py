@@ -74,7 +74,7 @@ class TesseraConfiguration(object):
                                  item_id=self.id_generator.next()))
                     row_objs.append(Row(items=cells))
 
-                    cur_span = 0
+                    cur_spans = []
                     cur_graphs = []
 
                 graph_cls = DashboardItem.CLASS_MAP[item_type]
