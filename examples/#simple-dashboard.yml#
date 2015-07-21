@@ -1,0 +1,18 @@
+---
+
+metadata:
+  id: 1
+  title: Simple Dashboard
+  definition
+  description: Simple Dashboard Example showing the simplicity of tessera-up
+
+
+definition:
+  queries:
+    0: stats.timers.prod.mailsync.syncback.overall.successful.median
+  sections:
+    - name: Example Section
+      graphs:
+        - span: 3
+          query: 0
+          item_type: simple_time_series

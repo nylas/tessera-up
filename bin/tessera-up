@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+
+import json
+from tessera_client.api.client import TesseraClient
+from tessera_client.api.model import EntityEncoder
+from tessera_up import TesseraConfiguration
+
+def main(config_file, tessera_url):
+    tc = TesseraConfiguration(config_file)
+    dashboard = tc.generate_dashboard()
+    client = TesseraClient(args.tessera_url)
+    client.update_dashboard(dashboard)
+    client._put("/api/dashboard/%s/definition" % dashboard.id,
+                json.dumps(dashboard.definition, cls=EntityEncoder))
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config_file", type=str)
+    parser.add_argument("tessera_url", type=str)
+
+    args = parser.parse_args()
+    main(args.config_file, args.tessera_url)

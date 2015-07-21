@@ -1,0 +1,4 @@
+-f file:///Users/systemizer/.cache/wheel
+requests==2.3.0
+tessera-client==0.4.4
+wheel==0.24.0
