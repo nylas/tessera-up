@@ -10,7 +10,17 @@ def main(config_file, tessera_url):
     tc = TesseraConfiguration(config_file)
     dashboard = tc.generate_dashboard()
     client = TesseraClient(args.tessera_url)
-    client.update_dashboard(dashboard)
+
+    cur_dashboards = client.list_dashboards()
+
+    # if dashboard doesn't exist, create it. else update it
+    if dashboard.href not in [d.href for d in cur_dashboards]:
+        client.create_dashboard(dashboard)
+    else:
+        client.update_dashboard(dashboard)
+
+    # tessera_client does not update the definition. We need to
+    # do this manually
     client._put("/api/dashboard/%s/definition" % dashboard.id,
                 json.dumps(dashboard.definition, cls=EntityEncoder))
 

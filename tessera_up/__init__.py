@@ -17,8 +17,8 @@ class TesseraConfiguration(object):
         self.config_file = config_file
         self.id_generator = self._generate_item_id()
 
-    # generates IDs for newly created items
     def _generate_item_id(self):
+        '''Generates IDs for tessera items'''
         i = 4
         while True:
             i += 1
@@ -32,6 +32,11 @@ class TesseraConfiguration(object):
                                    item_id=self.id_generator.next())
 
     def generate_dashboard(self):
+        '''
+        Reads the yaml config file and returns a tessera_client dashboard
+        object. This is the main entrypoint.
+
+        '''
         config_data = yaml.load(file(self.config_file, "rb"))
 
         definition = self._generate_definition(config_data['definition'])
@@ -47,6 +52,10 @@ class TesseraConfiguration(object):
         return dashboard
 
     def _parse_queries(self, raw_queries):
+        '''
+        Converts the queries data namespace in the yaml config
+        into a format that DashboardDefinition requires
+        '''
         query_result = {}
         for k, v in raw_queries.items():
             if not isinstance(v, list):
@@ -54,13 +63,28 @@ class TesseraConfiguration(object):
             query_result.update({k: {'name': k, 'targets': v}})
         return query_result
 
+    def _generate_row(self, graphs, spans):
+        '''
+        Helper method for _generate_sections
+        '''
+        cells = []
+        for graph, span in zip(graphs, spans):
+            cells.append(
+                Cell(span=span,
+                     items=[graph],
+                     item_id=self.id_generator.next()))
+        return Row(items=cells)
+
     def _parse_sections(self, sections_data):
+        '''
+        Converts the section data in the yaml configuration into
+        tessera_client Section objects. Assumes Graph:Cell 1:1 mapping
+        and will create new Rows when the span exceeds 12
+        '''
         section_objs = []
         for section_data in sections_data:
             graphs_data = section_data.pop('graphs')
 
-            # Iterate through graphs. Place 1:1 graph and cell. Place
-            # as many graphs into a row as possible (max span 12)
             row_objs = []
             cur_spans = []
             cur_graphs = []
@@ -69,13 +93,7 @@ class TesseraConfiguration(object):
                 span = graph_data.pop("span")
 
                 if sum(cur_spans) + span > 12:
-                    cells = []
-                    for graph, span in zip(cur_graphs, cur_spans):
-                        cells.append(
-                            Cell(span=span,
-                                 items=[graph],
-                                 item_id=self.id_generator.next()))
-                    row_objs.append(Row(items=cells))
+                    row_objs.append(self._generate_row(cur_graphs, cur_spans))
 
                     cur_spans = []
                     cur_graphs = []
@@ -86,13 +104,7 @@ class TesseraConfiguration(object):
                 cur_spans.append(span)
 
             if cur_graphs:
-                cells = []
-                for graph, span in zip(cur_graphs, cur_spans):
-                    cells.append(
-                        Cell(span=span,
-                             items=[graph],
-                             item_id=self.id_generator.next()))
-                row_objs.append(Row(items=cells))
+                row_objs.append(self._generate_row(cur_graphs, cur_spans))
 
             section_data['items'] = row_objs
             section_data['item_id'] = self.id_generator.next()
