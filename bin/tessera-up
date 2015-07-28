@@ -5,6 +5,7 @@ from tessera_client.api.client import TesseraClient
 from tessera_client.api.model import EntityEncoder
 from tessera_up import TesseraConfiguration
 
+
 def main(config_file, tessera_url):
     tc = TesseraConfiguration(config_file)
     dashboard = tc.generate_dashboard()

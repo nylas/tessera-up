@@ -6,6 +6,7 @@ from tessera_client.api.model import (Dashboard,
                                       Cell)
 import yaml
 
+
 class TesseraConfiguration(object):
     """
     Simply a wrapper that translates the yml configs into
@@ -16,19 +17,19 @@ class TesseraConfiguration(object):
         self.config_file = config_file
         self.id_generator = self._generate_item_id()
 
-
-    ## generates IDs for newly created items
+    # generates IDs for newly created items
     def _generate_item_id(self):
         i = 4
         while True:
-            i+=1
+            i += 1
             yield "d" + str(i)
 
     def _generate_definition(self, definition_data):
         queries = self._parse_queries(definition_data['queries'])
         sections = self._parse_sections(definition_data['sections'])
 
-        return DashboardDefinition(queries, items=sections, item_id=self.id_generator.next())
+        return DashboardDefinition(queries, items=sections,
+                                   item_id=self.id_generator.next())
 
     def generate_dashboard(self):
         config_data = yaml.load(file(self.config_file, "rb"))
@@ -36,8 +37,10 @@ class TesseraConfiguration(object):
         definition = self._generate_definition(config_data['definition'])
 
         dashboard_context = config_data['metadata']
-        dashboard_context['definition_href'] = "/api/dashboard/%s" % dashboard_context['id']
-        dashboard_context['href'] = "/api/dashboard/%s" % dashboard_context['id']        
+        dashboard_context['definition_href'] = "/api/dashboard/%s" % \
+                                               dashboard_context['id']
+        dashboard_context['href'] = "/api/dashboard/%s" % \
+                                    dashboard_context['id']
         dashboard_context['definition'] = definition
         dashboard = Dashboard(**dashboard_context)
 
@@ -48,7 +51,7 @@ class TesseraConfiguration(object):
         for k, v in raw_queries.items():
             if not isinstance(v, list):
                 v = [v]
-            query_result.update({ k: { 'name': k, 'targets': v } })
+            query_result.update({k: {'name': k, 'targets': v}})
         return query_result
 
     def _parse_sections(self, sections_data):
