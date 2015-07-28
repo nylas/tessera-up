@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name='tessera-up',
-    version='0.0.1',
+    version='0.0.2',
     include_package_data=True,
     packages=['tessera_up'],
     author="Rob McQueen",
