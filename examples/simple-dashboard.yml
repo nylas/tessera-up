@@ -8,10 +8,10 @@ metadata:
 
 definition:
   queries:
-    0: stats.timers.prod.mailsync.syncback.overall.successful.median
+    success_rate: stats.app.success_rate
   sections:
     - name: Example Section
       graphs:
         - span: 3
-          query: "0"
+          query: success_rate
           item_type: simple_time_series
